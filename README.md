@@ -26,6 +26,7 @@ Das erleichte die Entwicklung da diese dann lokal erfolgen kann. In die öffentl
 Release Versionen.  Auch ist es möglich mehrere Versionen paralell zu verwenden.
 
 Zuerst wird es, wie auch bei der orignal Cloud, nur ein Thema geben (als Standart und Dark).
+
 So wird es aussehen:
 
 ![MyCloud](https://github.com/hhoefling/MyCloud-1.9/assets/89247538/0fe8a1da-4487-4aa0-aed3-59ff53dc73d5)
