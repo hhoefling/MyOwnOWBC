@@ -1,5 +1,5 @@
-# MyCloud-1.9  (***Work in Progress***)
-**Eine einfache selbstgehostetet Version der openWB-Cloud.**
+# MyOwnOWBC  (***Work in Progress***)
+**Eine einfache selbstgehostetet Version der openWB-Cloud. (1.9,x)**
 
 
 Hier entsteht eine einfache Version der 1.9'er openWB-Cloud.
