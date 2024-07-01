@@ -96,3 +96,10 @@ Weiterhin wird hier der Benutzer angelegt. Beim Anmelden wird dieses Topic geles
 ![mqtt2](https://github.com/hhoefling/MyOwnOWBC/assets/89247538/9dbf6a5c-d218-4117-b486-c3e2d03ee8d1)
 
 
+Die Anmeldung verläuft dann wie folgt.
+
+Mit <b>mqttuser</b> und <b>mqttpassword</b> wird einen TlS gesicherte Verbindung zum MQTT Server aufgebaut.
+Dann wird das Topic <b>mqttuser/webparm/#</b> gelesen. Wenn dort eine ID gefunden wird ist der Benutzer angemeldet.
+Dieses Anmeldeinformationen werden dann in einem Verschlüsselten Cookie dem Browser zur aufbewarung gegeben.
+Die Website prüft dieses Cookie bei jedem Seitenaufruf
+
