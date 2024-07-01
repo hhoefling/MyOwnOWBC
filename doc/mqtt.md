@@ -66,5 +66,33 @@ keyfile /etc/letsencrypt/live/DOMAIN/privkey.pem
 ```
 Hierbei ist DOMAIN und ip4.des.Servers entprechend zu ersetzen.
 
+Nun legen wir den Benutzer an.
+
+```
+sudo mosquitto_passwd -c /etc/mosquitto/passwd mqttuser
+sudo mosquitto_passwd -b /etc/mosquitto/passwd mqttuser mqttpassword
+sudo /etc/init.d/mosquitto stop
+sudo /etc/init.d/mosquitto start
+
+```
+
+Dieser Benutzername wird auch als Topic-Name verwendet. Er sollte also nur aus Buchstaben bestehen.
+Die openWB Konfiguration läst auch keine andere Zeichen zu. 
+
+Mit MQTT-Desktop kann man nun die Verbinung mit TLS aufbauen.
+
+![mqtt1](https://github.com/hhoefling/MyOwnOWBC/assets/89247538/88885e8f-9b5c-402c-94b2-684d91b809ae)
+
+
+Die ID kann frei gewählt werden, sie muss nur größer 0 sein. Das Theme ist das defaultthema (wie in openWB)
+
+Die Anmeldung verläuft wie folgt:
+
+Es wird mit mqttuser und mqttpassword
+Der Benutzername **mqttuser** ist hier "sechseins"  
+Hier sieht man schon die Daten der localen openWB im Zwei "sechseins".
+Weiterhin wird hier der Benutzer angelegt. Beim Anmelden wird dieses Topic gelesen um den Benutzer zu verifizieren.
+
+![mqtt2](https://github.com/hhoefling/MyOwnOWBC/assets/89247538/9dbf6a5c-d218-4117-b486-c3e2d03ee8d1)
 
 
