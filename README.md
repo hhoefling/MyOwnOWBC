@@ -30,3 +30,9 @@ Zuerst wird es, wie auch bei der orignal Cloud, nur ein Thema geben (als Standar
 So wird es aussehen:
 
 ![MyCloud](https://github.com/hhoefling/MyCloud-1.9/assets/89247538/0fe8a1da-4487-4aa0-aed3-59ff53dc73d5)
+
+
+**Installation:**
+
+-  [MQTT-Server ](doc/mqtt.md) Vorbereiten des MQTT-Servers Mosquitto auf dem Webspace. 
+
