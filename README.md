@@ -35,4 +35,7 @@ So wird es aussehen:
 **Installation:**
 
 -  [MQTT-Server ](doc/mqtt.md) Vorbereiten des MQTT-Servers Mosquitto auf dem Webspace. 
+-  [MQTT-Brücke ](doc/openwb_bridge.md) Vorbereiten der heimischen Wallbox.
+
+
 
