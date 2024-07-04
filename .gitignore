@@ -1,0 +1,17 @@
+*.csv
+*.log
+*.pyc
+*.bak
+*.sav
+*.list
+*.conf
+x.sh
+*.conf
+.ftp*
+none.*
+web/ladelog
+web/logging/data/
+web/settings/.htaccess
+web/settings/.passwd
+web/lastcommit
+authorized_keys
