@@ -181,3 +181,4 @@ notifications false
 cleansession false
 ```
 
+Hierbei auch wieder *mqttuser* *mqttpasswd* und *domain* entsprechend anpassen.
