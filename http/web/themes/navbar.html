@@ -1,0 +1,38 @@
+<header>
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top" style="line-height: 1.0;">
+		<a class="navbar-brand" href="./index.php">
+			<span class="devicename" style="color:gray;">openWB</span>
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="navbar-nav">
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbardropSettings" data-toggle="dropdown">
+						Logging
+					</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" id="navLadelog" href="ladelog.php">Ladeprotokoll</a>
+						<a class="dropdown-item" id="navChartlog" href="logging/index.php">Graph</a>
+					</div>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbardropSettings" data-toggle="dropdown">
+						Logging-Old
+					</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" id="navLadelogold" href="ladelog.php?old=1">Ladeprotokoll</a>
+					</div>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="logoff.php">Abmelden</a>
+				</li>
+
+			</ul>
+		</div>
+	</nav>
+</header>
