@@ -25,7 +25,7 @@ auf den openWB-Raspi erforderlich.
 Das erleichte die Entwicklung da diese dann lokal erfolgen kann. In die öffentlichkeit kommen dann nur
 Release Versionen.  Auch ist es möglich mehrere Versionen paralell zu verwenden.
 
-Zuerst wird es, wie auch bei der orignal Cloud, nur ein Thema geben (als Standart und Dark).
+Zuerst wird es, wie auch bei der orignal Cloud, nur ein Thema geben (als Standard und Dark).
 
 So wird es aussehen:
 
