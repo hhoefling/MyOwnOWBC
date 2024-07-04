@@ -46,7 +46,7 @@ Wobei hier dann 91.xx.xx.xx die Dynamische IP Adresse des Heimischen DSL-Routers
 Mit dem MQTT-Explorer kann man dies ebenfalls prüfen.
 
 Hier  nochmal die Konfigurationdatei die von openWB erzeugt wurde.
-Es wurden einige Zeilen ergänzt damit auch die Grafik-Auswahl mit zur Cloud übernimmen wird.
+Es wurden einige Zeilen ergänzt damit auch die Grafik-Auswahl mit zur Cloud übernommen wird.
 
 File: /etc/mosquitto/conf.d/99-bridge-cloud.conf
 
