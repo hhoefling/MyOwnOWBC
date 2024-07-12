@@ -8,11 +8,49 @@ function  xgeturl($file)
  $fn=sprintf('themes/%s/%s', $theme,$file);
  $ftime=filemtime($fn);
  return sprintf('%s?v=%d' , $fn,$ftime);
+}
 
+
+
+function makedebugreihe()
+{
+ global $dbdebs,$dbdeb,$debug;
+ 
+ echo <<<END
+	<!-- debug reihe  -->
+	<div id="altclicker" class="container-fluid py-0 pb-2">
+	  <div class="row py-0 px-0">
+		<div class="rounded shadow wb-widget col-md p-2 m-1 ">
+			<div id="accordion" class="accordion">
+				<div class="card mb-0">
+					<div class="card-header bg-secondary collapsed" data-toggle="collapse" data-target="#debugOne">
+						<a class="card-title">Debug </a>
+					</div>
+					<div id="debugOne" class="card-body collapse" data-parent="#accordion">
+						<pre id="debugdiv" style="font-size:0.7rem;">
+
+END;
+					foreach( $dbdebs as $s)
+						echo "DEB:$s\n";
+					if( $debug > 3) { 
+						echo "---- Globals---\n";
+						$dbdebs="striped";	
+				 		print_r($GLOBALS);
+					}
+echo <<<END
+						</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+  	  </div>
+	</div>
+	<!-- debug reihe  -->
+END;
 }
 ?>
 <!DOCTYPE html>
-<html lang="de" class="theme-dark">
+<html lang="de" class="xtheme-dark">
 
 <head>
 	<!-- theme for openWB layout for standard and dark, only css is different-->
@@ -151,6 +189,29 @@ function  xgeturl($file)
 	<script src="<?php echo xgeturl('batteryList.js');?>"></script>
 	<script src="<?php echo xgeturl('pricechart.js');?>"></script>
 
+<?php
+$iscl=($iscloud) ? 'true' : 'false';
+out('iscl:' . $iscl);
+echo <<<END
+    <script>
+    function validate()
+     {
+        console.log('validate..');
+        usern='$_CURRENT_USER->username';
+        passwd='$_CURRENT_USER->passwd';
+        dbdeb=$dbdeb;
+        iscloud=$iscl;
+		MOSQSERVER='$MOSQSERVER';
+		MOSQPORT=$MOSQPORT;
+		MOSQPORTSSL=$MOSQPORTSSL;
+		PROJECT='$PROJECT';
+        theme='$theme';
+    }
+    validate();
+    </script>
+
+END;
+?>
 </head>
 
 <body>
@@ -555,9 +616,10 @@ function  xgeturl($file)
 			</div>
 		</div>
 	</div>
-	</div>
+
 	<!-- ENDE COLOR THEME -->
-	<div id="footer">
+
+
 		<!-- modal chargemode-select-window -->
 		<div class="modal fade" id="chargeModeModal">
 			<div class="modal-dialog">
@@ -660,31 +722,8 @@ function  xgeturl($file)
 				<!-- no modal footer -->
 			</div>
 		</div>
-	</div>
 
-<?php
-$iscl=($iscloud) ? 'true' : 'false';
-out('iscl:' . $iscl);
-echo <<<END
-    <script>
-    function validate()
-     {
-        console.log('validate..');
-        usern='$_CURRENT_USER->username';
-        passwd='$_CURRENT_USER->passwd';
-        dbdeb=$dbdeb;
-        iscloud=$iscl;
-		MOSQSERVER='$MOSQSERVER';
-		MOSQPORT=$MOSQPORT;
-		MOSQPORTSSL=$MOSQPORTSSL;
-		PROJECT='$PROJECT';
-        theme='$theme';
-    }
-    validate();
-    </script>
 
-END;
-?>
 
 
 	<!-- some scripts -->
@@ -1038,7 +1077,7 @@ END;
 						powerGraph.activateDay();
 					}
 					// powerGraph.reset();
-					// subscribeMqttGraphSegments();
+					// subscribeLiveGraphSegments();
 				}
 			});
 			console.log('------------ $(document).ready --end ----------------' )
@@ -1046,14 +1085,22 @@ END;
 	</script>
 
 <?php
-			if( $debugold>9)
-			{
-			 echo "<pre>";
-			 $lines=[];
-			 print_r($GLOBALS);  
-			 echo "</pre>";
-			}   
+	 if($debug>2)
+	 {
+		$lines="striped";
+		$owbconf="striped";
+   		makedebugreihe();
+	 }
 ?>
+	<div id="footer">
+		<footer class="bg-dark fixed-bottom small text-light">
+			<div class="container text-center">
+				openWB_lite <span id='spanversion' class='spanversion'></span>, die modulare Wallbox
+			</div>
+		</footer>
+	</div>
+	
+	
 </body>
 
 </html>

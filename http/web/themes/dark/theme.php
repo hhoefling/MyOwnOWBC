@@ -22,15 +22,112 @@ END;
  exit;	
 }
 
+out("global theme:$theme");
 
-$theme=$_CURRENT_USER->thema;
-simplehead($theme);
+function  xgeturl($dir, $file)
+{
+ $fn=sprintf('themes/%s/%s', $dir,$file);
+ $ftime=filemtime($fn);
+ out("xgeturl.Filename:$fn time:$ftime");
+ return sprintf('%s?v=%d' , $fn,$ftime);
+}
+
+
+function makedebugreihe()
+{
+ global $dbdebs,$dbdeb,$debug;
+ 
+ echo <<<END
+	<!-- debug reihe  -->
+	<div id="altclicker" class="container-fluid py-0 pb-2">
+	  <div class="row py-0 px-0">
+		<div class="rounded shadow wb-widget col-md p-2 m-1 ">
+			<div id="accordion" class="accordion">
+				<div class="card mb-0">
+					<div class="card-header bg-secondary collapsed" data-toggle="collapse" data-target="#debugOne">
+						<a class="card-title">Debug </a>
+					</div>
+					<div id="debugOne" class="card-body collapse" data-parent="#accordion">
+						<pre id="debugdiv" style="font-size:0.7rem;">
+
+END;
+					foreach( $dbdebs as $s)
+						echo "DEB:$s\n";
+					if( $debug > 3) { 
+						echo "---- Globals---\n";
+						$dbdebs="striped";	
+				 		print_r($GLOBALS);
+					}
+echo <<<END
+						</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+  	  </div>
+	</div>
+	<!-- debug reihe  -->
+END;
+}
+
+
+
 
 ?>
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	<!-- theme for openWB layout for standard and dark, only css is different-->
+	<!-- 2020 Michael Ortenstein -->
+	<!-- 2024 Modified for SmartHome by Heinz Hoefling -->
+
+	<title>openWB</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="openWB">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<link rel="apple-touch-startup-image" href="/openWB/web/img/favicons/splash1125x2436w.png"  />
+	<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="img/favicons/splash1125x2436w.png">
+	<meta name="apple-mobile-web-app-title" content="openWB">
+
+	<meta name="description" content="openWB">
+	<meta name="keywords" content="openWB">
+	<meta name="author" content="Michael Ortenstein">
+	<link rel="apple-touch-icon" sizes="72x72" href="img/favicons/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="img/favicons/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="img/favicons/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="img/favicons/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="img/favicons/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="img/favicons/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="img/favicons/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="img/favicons/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="57x57" href="img/favicons/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="img/favicons/apple-touch-icon-60x60.png">
+	<link rel="manifest" href="manifest.json">
+	<link rel="shortcut icon" href="img/favicons/favicon.ico">
+	<!-- <link rel="apple-touch-startup-image" href="img/loader.gif"> -->
+	<meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-4.4.1/bootstrap.min.css">
+	<!-- Normalize -->
+	<link rel="stylesheet" type="text/css" href="css/normalize-8.0.1.css">
+	<!-- Font Awesome, all styles -->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-5.8.2/css/all.css">
+	<!-- local css due to async loading of theme css -->
 	<style>
 		#preloader {
 <?php
-			if( $theme=='dark')
+			if( stripos($theme,'dark')>=0)
 				echo 'background-color:black;';
 			else	
 				echo 'background-color:white;';
@@ -49,7 +146,7 @@ simplehead($theme);
 		#preloader-image {
 			max-width: 300px;
 <?php
-			if( $theme=='dark')
+			if( stripos($theme,'dark')>=0)
 				echo 'filter:invert(1);';
 			else
 			 	echo 'filter:invert(0);';
@@ -57,7 +154,7 @@ simplehead($theme);
 		}
 		#preloader-info {
 <?php
-			if( $theme=='dark')
+			if( stripos($theme,'dark')>=0)
 				echo 'color: #e4e4e4;';
 			else
 				echo 'color: #141414;';
@@ -74,6 +171,31 @@ simplehead($theme);
 	<!-- important scripts to be loaded -->
 	<script src="js/jquery-3.6.0.min.js"></script>
 	<script src="js/bootstrap-4.4.1/bootstrap.bundle.min.js"></script>
+<?php
+//$iscloud=true;
+$iscl=($iscloud) ? 'true' : 'false';
+out('iscl:' . $iscl);
+echo <<<END
+    <script>
+    function validate()
+     {
+        console.log('validate..');
+        usern='$_CURRENT_USER->username';
+        passwd='$_CURRENT_USER->passwd';
+        dbdeb=$dbdeb;
+        iscloud=$iscl;
+		MOSQSERVER='$MOSQSERVER';
+		MOSQPORT=$MOSQPORT;
+		MOSQPORTSSL=$MOSQPORTSSL;
+		PROJECT='$PROJECT';
+        theme='$theme';
+    }
+    validate();
+    </script>
+
+END;
+?>
+
 	<script>
 		function getCookie(cname) {
 			var name = cname + '=';
@@ -90,6 +212,7 @@ simplehead($theme);
 			}
 			return '';
 		}
+	 	$('head').append('<link rel="stylesheet" href="<?php echo xgeturl($theme,'style.css');?>">');	var debugmode=<?php echo $debug;?>;
 	</script>
 </head>
 
@@ -844,14 +967,7 @@ simplehead($theme);
 				});
 			</script>
 		</div>
-
-<br>
 	</div>  <!-- container -->
-	<footer class="bg-dark fixed-bottom small text-light">
-		<div class="container text-center">
-			openWB_lite <span id='spanversion' class='spanversion'></span>, die modulare Wallbox
-		</div>
-	</footer>
 
 	<script>
 
@@ -932,19 +1048,17 @@ simplehead($theme);
 		})();
 
 		$(document).ready(function(){
-
+			console.log('document.read MAIN');
 			// load scripts synchronously in order specified
 			var scriptsToLoad = [
-				
 				'js/Chart.bundle.min.js',					// load Chart.js library
 				'js/chartjs-plugin-annotation.min.js',		// load Chart.js annotation plugin
 				'js/mqttws31.js',							// load mqtt library
-				'<?php echo geturl('js/mqtt.js');?>',		// some helper functions
-				'<?php echo geturl('themes/dark/helperFunctions.js');?>',
-				'<?php echo geturl('themes/dark/processAllMqttMsg.js');?>',
-				'<?php echo geturl('themes/dark/livechart.js');?>',
-				'<?php echo geturl('themes/dark/electricityPriceChart.js');?>',
-				'<?php echo geturl('themes/dark/setupMqttServices.js');?>'
+				'<?php echo xgeturl('dark','helperFunctions.js');?>',		// some helper functions			
+				'<?php echo xgeturl('dark','processAllMqttMsg.js');?>',		// functions for processing messages			
+				'<?php echo xgeturl('dark','livechart.js');?>',				// functions performing mqtt and start mqtt-service
+				'<?php echo xgeturl('dark','electricityPriceChart.js');?>',	// functions performing mqtt and start mqtt-service
+				'<?php echo xgeturl('dark','setupMqttServices.js');?>'		// functions performing mqtt and start mqtt-service
 			];
 			scriptsToLoad.forEach(function(src) {
 				var script = document.createElement('script');
@@ -1182,6 +1296,23 @@ simplehead($theme);
 
 		});  // end document ready
 	</script>
+
+<?php
+	 if($debug>0)
+	 {
+		$lines="striped";
+		$owbconf="striped";
+   		makedebugreihe();
+	 }
+?>
+
+	<div id="footer">
+		<footer class="bg-dark fixed-bottom small text-light">
+			<div class="container text-center">
+				openWB_lite <span id='spanversion' class='spanversion'></span>, die modulare Wallbox
+			</div>
+		</footer>
+	</div>
 
 </body>
 

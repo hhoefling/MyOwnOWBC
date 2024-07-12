@@ -57,33 +57,6 @@ var d8bgCol = style.getPropertyValue('--d8bgCol');
 var d9Col = style.getPropertyValue('--d9Col');
 var d9bgCol = style.getPropertyValue('--d9bgCol');
 
-
-var alp1;
-var alp2;
-var alp3;
-var alpa;
-var atime = [];
-var abezug;
-var apv;
-var aspeicherl;
-var aspeichersoc;
-var asoc;
-var asoc1;
-var ahausverbrauch;
-var averbraucher1;
-var averbraucher2;
-var ashd1;
-var ashd2;
-var ashd3;
-var ashd4;
-var ashd5;
-var ashd6;
-var ashd7;
-var ashd8;
-var ashd9;
-
-// var awattartime = [];
-// var graphawattarprice;
 var initialread = 0;
 var graphloaded = 0;
 var boolDisplayHouseConsumption;
@@ -91,15 +64,6 @@ var boolDisplayLoad1;
 var boolDisplayLp1Soc;
 var boolDisplayLoad2;
 var boolDisplayLp2Soc;
-var boolDisplayLp1;
-var boolDisplayLp2;
-var boolDisplayLp3;
-var boolDisplayLpAll;
-var boolDisplaySpeicherSoc;
-var boolDisplaySpeicher;
-var boolDisplayEvu;
-var boolDisplayPv;
-var boolDisplayLegend;
 var boolDisplayShD1;
 var boolDisplayShD2;
 var boolDisplayShD3;
@@ -109,6 +73,16 @@ var boolDisplayShD6;
 var boolDisplayShD7;
 var boolDisplayShD8;
 var boolDisplayShD9;
+var boolDisplayLp1;
+var boolDisplayLp2;
+var boolDisplayLp3;
+var boolDisplayLpAll;
+var boolDisplaySpeicherSoc;
+var boolDisplaySpeicher;
+var boolDisplayEvu;
+var boolDisplayPv;
+var boolDisplayLegend;
+var boolDisplayLiveGraph;
 var d1name = 'Device 1';
 var d2name = 'Device 2';
 var d3name = 'Device 3';
@@ -152,30 +126,6 @@ var all15p;
 var all16p;
 
 var hidehaus;
-var hideload1;
-var hideload2;
-var hidelp2soc;
-var hidelp1soc; 
-var hidelp1;
-var hidelp2;
-var hidelp3;
-var hidespeichersoc;
-var hidespeicher;
-var hidelpa;
-var hidepv;
-var hideevu;
-var hideshd1;
-var hideshd2;
-var hideshd3;
-var hideshd4;
-var hideshd5;
-var hideshd6;
-var hideshd7;
-var hideshd8;
-var hideshd9;
-
-
-
 var myLine;
 
 function loadgraph(animationDuration = 1000) {
@@ -517,29 +467,17 @@ function loadgraph(animationDuration = 1000) {
 				labels: {
 					fontColor: fontCol,
 					filter: function(item,chart) {
-						if ( item.text.includes(hidehaus)|| 
-							 item.text.includes(hideload2)|| 
-							 item.text.includes(hideload1)|| 
-							 item.text.includes(hidelp2soc)|| 
-							 item.text.includes(hidelp1soc)|| 
-							 item.text.includes(hidelp1) || 
-							 item.text.includes(hidelp2) || 
-							 item.text.includes(hidelp3) || 
-							 item.text.includes(hidespeichersoc) || 
-							 item.text.includes(hidespeicher) || 
-							 item.text.includes(hidelpa) || 
-							 item.text.includes(hidepv)  || 
-							 item.text.includes(hideevu) || 
-							 item.text.includes(hideshd1)|| 
-							 item.text.includes(hideshd2)|| 
-							 item.text.includes(hideshd3)|| 
-							 item.text.includes(hideshd4)|| 
-							 item.text.includes(hideshd5)|| 
-							 item.text.includes(hideshd6)|| 
-							 item.text.includes(hideshd7)|| 
-							 item.text.includes(hideshd8)|| 
-							 item.text.includes(hideshd9) 
-							 ) { return false } else { return true}
+						if ( item.text.includes(hidehaus)   || item.text.includes(hideload2)  || item.text.includes(hideload1) 
+						  || item.text.includes(hidelp2soc) || item.text.includes(hidelp1soc) || item.text.includes(hidelp1) 
+						  || item.text.includes(hidelp2)    || item.text.includes(hidelp3)    
+						  || item.text.includes(hidespeichersoc) || item.text.includes(hidespeicher) 
+						  || item.text.includes(hidelpa) || item.text.includes(hidepv) || item.text.includes(hideevu) 
+						  || item.text.includes(hideshd1)|| item.text.includes(hideshd2)|| item.text.includes(hideshd3)
+						  || item.text.includes(hideshd4)|| item.text.includes(hideshd5)|| item.text.includes(hideshd6) 
+						  || item.text.includes(hideshd7) || item.text.includes(hideshd8)|| item.text.includes(hideshd9) 
+						  ) 
+						     { return false } 
+						else { return true}
 					}
 				}
 			},
@@ -605,7 +543,7 @@ function loadgraph(animationDuration = 1000) {
 	initialread = 1;
 	console.log('Set initialread = 1 ')
 	$('#waitforgraphloadingdiv').hide();
-}  // end loadgraph
+}	// end loadgraph
 
 
 
@@ -614,7 +552,7 @@ function setvisibility(datarr,hidevar,hidevalue,booldisplay){
 	var arrayLength = datarr.length;
 	var vis=0
 	for (var i = 0; i < arrayLength; i++) {
-		if (( datarr[i] >= 0.001) || (datarr[i] <=- 0.001)) {
+		if (( datarr[i] >= 0.002) || (datarr[i] <=- 0.002)) {
 			vis=1
 		}
 	}
@@ -629,14 +567,22 @@ function setvisibility(datarr,hidevar,hidevalue,booldisplay){
 	}
 }
 
+// ein Element xalllivevalues (csv array)
 function putgraphtogether() {
 	console.log('putGrpahtogesther ', all1,all2,all3,all4,all5,all6,all7,all8,all9,all10,all11,all12,all13,all14,all15,all16)
-	if ( (all1 == 1) && (all2 == 1) && (all3 == 1) && (all4 == 1) && (all5 == 1) && (all6 == 1) && (all7 == 1) && (all8 == 1) && (all9 == 1) && (all10 == 1) && (all11 == 1) && (all12 == 1) && (all13 == 1) && (all14 == 1) && (all15 == 1) && (all16 == 1) ){
-		var alldata = all1p + "\n" + all2p + "\n" + all3p + "\n" + all4p + "\n" + all5p + "\n" + all6p + "\n" + all7p + "\n" + all8p + "\n" + all9p + "\n" + all10p + "\n" + all11p + "\n" + all12p + "\n" + all13p + "\n" + all14p + "\n" + all15p + "\n" + all16p;
+	if ( (all1 == 1) && (all2 == 1) && (all3 == 1) && (all4 == 1) && (all5 == 1) && (all6 == 1) && (all7 == 1) 
+	  && (all8 == 1) && (all9 == 1) && (all10 == 1) && (all11 == 1) && (all12 == 1) && (all13 == 1) && (all14 == 1) 
+	  && (all15 == 1) && (all16 == 1) )
+	{
+	   // wenn alle 16 subscriptes zusammen sind, alle 16 Blocks zusammenbasten zu einem ganzen Tag
+		var alldata = all1p + "\n" + all2p + "\n" + all3p + "\n" + all4p + "\n" + all5p + "\n" + all6p + "\n" 
+		            + all7p + "\n" + all8p + "\n" + all9p + "\n" + all10p + "\n" + all11p + "\n" + all12p + "\n" 
+					+ all13p + "\n" + all14p + "\n" + all15p + "\n" + all16p;
 		alldata = alldata.replace(/^\s*[\n]/gm, "");
-		alldata = alldata.replace(/^\s*-[\n]/gm, "");
+		alldata = alldata.replace(/^\s*-[\n]/gm, "");	// leeren 11..16'er elemente wieder entfernen
 		var csvData = [];
 		var rawcsv = alldata.split(/\r?\n|\r/);
+		// 542 Zeilen
 		for (var i = 0; i < rawcsv.length; i++) {
 			  csvData.push(rawcsv[i].split(","));
 		}
@@ -646,14 +592,16 @@ function putgraphtogether() {
 		getCol(csvData, 0).forEach(function(zeit){
 			splittime.push(zeit.substring(0, zeit.length -3));
 		});
+		//console.log('splittime',splittime); // alle Zeiten als Array also Column 1 mit 5xx Zeilen ohne sekunden
 		atime = splittime;
-		if ( atime.length >= 30 ) {
+		if ( atime.length >= 30 ) {		// mindest 30 Zeilen beisammen
 			//atime = getCol(csvData, 0);
 			abezug = convertToKw(getCol(csvData, 1));		// alllivevalues spalte mit 5xx elems
 			alpa = convertToKw(getCol(csvData, 2));
 			apv = convertToKw(getCol(csvData, 3));
 			alp1 = convertToKw(getCol(csvData, 4));
 			alp2 = convertToKw(getCol(csvData, 5));
+			// 6 llges ?
 			aspeicherl = convertToKw(getCol(csvData, 7));
 			aspeichersoc = getCol(csvData, 8);
 			asoc = getCol(csvData, 9);
@@ -662,11 +610,11 @@ function putgraphtogether() {
 			averbraucher1 = convertToKw(getCol(csvData, 12));
 			averbraucher2 = convertToKw(getCol(csvData, 13));
 			alp3 = convertToKw(getCol(csvData, 14));
-			alp4 = convertToKw(getCol(csvData, 15));
-			alp5 = convertToKw(getCol(csvData, 16));
-			alp6 = convertToKw(getCol(csvData, 17));
-			alp7 = convertToKw(getCol(csvData, 18));
-			alp8 = convertToKw(getCol(csvData, 19));
+//			alp4 = convertToKw(getCol(csvData, 15));
+//			alp5 = convertToKw(getCol(csvData, 16));
+//			alp6 = convertToKw(getCol(csvData, 17));
+//			alp7 = convertToKw(getCol(csvData, 18));
+//			alp8 = convertToKw(getCol(csvData, 19));
 			ashd1 = convertToKw(getCol(csvData, 20));
 			ashd2 = convertToKw(getCol(csvData, 21));
 			ashd3 = convertToKw(getCol(csvData, 22));
@@ -686,11 +634,11 @@ function putgraphtogether() {
 			setvisibility(alp1,'hidelp1','Lp1','boolDisplayLp1');
 			setvisibility(alp2,'hidelp2','Lp2','boolDisplayLp2');
 			setvisibility(alp3,'hidelp3','Lp3','boolDisplayLp3');
-//			setvisibility(alp4,'hidelp4','Lp4','boolDisplaylp1');
-//			setvisibility(alp5,'hidelp5','Lp5','boolDisplaylp1');
-//			setvisibility(alp6,'hidelp6','Lp6','boolDisplaylp1');
-//			setvisibility(alp7,'hidelp7','Lp7','boolDisplaylp1');
-//			setvisibility(alp8,'hidelp8','Lp8','boolDisplaylp1');
+//			setvisibility(alp3,'hidelp4','Lp4','boolDisplayLp4');
+//			setvisibility(alp3,'hidelp5','Lp5','boolDisplayLp5');
+//			setvisibility(alp3,'hidelp6','Lp6','boolDisplayLp6');
+//			setvisibility(alp3,'hidelp7','Lp7','boolDisplayLp7');
+//			setvisibility(alp3,'hidelp8','Lp8','boolDisplayLp8');
 			setvisibility(ashd1,'hideshd1',d1name,'boolDisplayShD1');
 			setvisibility(ashd2,'hideshd2',d2name,'boolDisplayShD2');
 			setvisibility(ashd3,'hideshd3',d3name,'boolDisplayShD3');
@@ -735,7 +683,6 @@ function updateGraph(dataset) {
 	for (var i = 0; i < lines.length; i++) 
 	{
 		var linessplit=lines[i].split(",");
-		console.log('updateGraph: linessplit:',i, linessplit);
 	
 		var ldate = linessplit[0];
 		var lbezug = linessplit[1];
@@ -784,20 +731,20 @@ function updateGraph(dataset) {
 	myLine.data.datasets[10].data.push(lverbraucher2 / 1000);
 	myLine.data.datasets[11].data.push(lpa / 1000);
 	myLine.data.datasets[12].data.push(lp3 / 1000);
-//	myLine.data.datasets[13].data.push(0) //lp4 / 1000);
-//	myLine.data.datasets[14].data.push(0) //lp5 / 1000);
-//	myLine.data.datasets[15].data.push(0) //lp6 / 1000);
-//	myLine.data.datasets[16].data.push(0) //lp7 / 1000);
-//	myLine.data.datasets[17].data.push(0) //lp8 / 1000);
-	myLine.data.datasets[13].data.push(shd1 / 1000);
-	myLine.data.datasets[14].data.push(shd2 / 1000);
-	myLine.data.datasets[15].data.push(shd3 / 1000);
-	myLine.data.datasets[16].data.push(shd4 / 1000);
-	myLine.data.datasets[17].data.push(shd5 / 1000);
-	myLine.data.datasets[18].data.push(shd6 / 1000);
-	myLine.data.datasets[19].data.push(shd7 / 1000);
-	myLine.data.datasets[20].data.push(shd8 / 1000);
-	myLine.data.datasets[21].data.push(shd9 / 1000);
+	myLine.data.datasets[13].data.push(0) //lp4 / 1000);
+	myLine.data.datasets[14].data.push(0) //lp5 / 1000);
+	myLine.data.datasets[15].data.push(0) //lp6 / 1000);
+	myLine.data.datasets[16].data.push(0) //lp7 / 1000);
+	myLine.data.datasets[17].data.push(0) //lp8 / 1000);
+	myLine.data.datasets[/*18*/13].data.push(shd1 / 1000);
+	myLine.data.datasets[/*19*/14].data.push(shd2 / 1000);
+	myLine.data.datasets[/*20*/15].data.push(shd3 / 1000);
+	myLine.data.datasets[/*21*/16].data.push(shd4 / 1000);
+	myLine.data.datasets[/*22*/17].data.push(shd5 / 1000);
+	myLine.data.datasets[/*23*/18].data.push(shd6 / 1000);
+	myLine.data.datasets[/*24*/19].data.push(shd7 / 1000);
+	myLine.data.datasets[/*25*/20].data.push(shd8 / 1000);
+	myLine.data.datasets[/*26*/21].data.push(shd9 / 1000);
 	//myLine.data.datasets[27].data.push(shd1t0);
 	//myLine.data.datasets[28].data.push(shd1t1);
 	//myLine.data.datasets[29].data.push(shd1t2);
@@ -809,15 +756,12 @@ function updateGraph(dataset) {
 }
 
 function checkgraphload(){
-	console.log('checkgraphload' , graphloaded )
 	if ( graphloaded == 1 ) {
 		myLine.destroy();
-		console.log('MyLine Destroy');
 		loadgraph(0);  // when reloading graph, no more "pumping" animations
 		return;
 	}
-
-	if( typeof boolDisplayHouseConsumption === "boolean" &&
+	if (typeof boolDisplayHouseConsumption === "boolean" &&
 		typeof boolDisplayLoad1 === "boolean" &&
 		typeof boolDisplayLp1Soc === "boolean" &&
 		typeof boolDisplayLp2Soc === "boolean" &&
@@ -825,11 +769,6 @@ function checkgraphload(){
 		typeof boolDisplayLp1 === "boolean" &&
 		typeof boolDisplayLp2 === "boolean" &&
 		typeof boolDisplayLp3 === "boolean" &&
-		typeof boolDisplayLpAll === "boolean" &&
-		typeof boolDisplaySpeicherSoc === "boolean" &&
-		typeof boolDisplaySpeicher === "boolean" &&
-		typeof boolDisplayEvu === "boolean" &&
-		typeof boolDisplayPv === "boolean" &&
 		typeof boolDisplayShD1 === "boolean" &&
 		typeof boolDisplayShD2 === "boolean" &&
 		typeof boolDisplayShD3 === "boolean" &&
@@ -839,14 +778,17 @@ function checkgraphload(){
 		typeof boolDisplayShD7 === "boolean" &&
 		typeof boolDisplayShD8 === "boolean" &&
 		typeof boolDisplayShD9 === "boolean" &&
-		typeof boolDisplayLegend === "boolean" ) 
-		{
+		typeof boolDisplayLpAll === "boolean" &&
+		typeof boolDisplaySpeicherSoc === "boolean" &&
+		typeof boolDisplaySpeicher === "boolean" &&
+		typeof boolDisplayEvu === "boolean" &&
+		typeof boolDisplayPv === "boolean" &&
+		typeof boolDisplayLegend === "boolean" ) {
 		if ( initialread != 0 ) {
 			if ( graphloaded == 0 ) {
 				graphloaded = 1;
 			} else {
 				myLine.destroy();
-				console.log('myLine.destroy() 2');
 			}
 			loadgraph();
 		}
@@ -889,21 +831,6 @@ function forcegraphload() {
 		if ( !(typeof boolDisplayLp3 === "boolean") ) {
 			showhidedataset('boolDisplayLp3');
 		}
-//		if ( !(typeof boolDisplayLp4 === "boolean") ) {
-//			showhidedataset('boolDisplayLp4');
-//		}
-//		if ( !(typeof boolDisplayLp5 === "boolean") ) {
-//			showhidedataset('boolDisplayLp5');
-//		}
-//		if ( !(typeof boolDisplayLp6 === "boolean") ) {
-//			showhidedataset('boolDisplayLp6');
-//		}
-//		if ( !(typeof boolDisplayLp7 === "boolean") ) {
-//			showhidedataset('boolDisplayLp7');
-//		}
-//		if ( !(typeof boolDisplayLp8 === "boolean") ) {
-//			showhidedataset('boolDisplayLp8');
-//		}
 		if ( !(typeof boolDisplayLpAll === "boolean") ) {
 			showhidedataset('boolDisplayLpAll');
 		}

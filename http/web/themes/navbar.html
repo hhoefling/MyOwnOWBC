@@ -12,23 +12,46 @@
 
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardropSettings" data-toggle="dropdown">
-						Logging
+						Laden
 					</a>
 					<div class="dropdown-menu">
 						<a class="dropdown-item" id="navLadelog" href="ladelog.php">Ladeprotokoll</a>
-						<a class="dropdown-item" id="navChartlog" href="logging/index.php">Graph</a>
+						<a class="dropdown-item" id="navLadelogold" href="ladelog.php?old=1">Ladeprotokoll (alt)</a>
 					</div>
 				</li>
 
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardropSettings" data-toggle="dropdown">
-						Logging-Old
+						Loggging
 					</a>
 					<div class="dropdown-menu">
-						<a class="dropdown-item" id="navLadelogold" href="ladelog.php?old=1">Ladeprotokoll</a>
+						<a class="dropdown-item" id="navdaylog" href="logging.php?sub=dayly">Tageslog</a>
+						<a class="dropdown-item" id="navmonthlog" href="logging.php?sub=montly">Monatslog</a>
+						<a class="dropdown-item" id="navyearlog" href="logging.php?sub=yearly">Jahrslog</a>
 					</div>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbardropSettings" data-toggle="dropdown">
+						Themen
+					</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" id="navthemen1" href="./index.php?theme=standard">Standardg</a>
+						<a class="dropdown-item" id="navthemen2" href="./index.php?theme=dark">Dunkel (dark)</a>
+						<a class="dropdown-item" id="navthemen3" href="./index.php?theme=EvenDarker">Dunkler (EvenDarker)</a>
+						<a class="dropdown-item" id="navthemen4" href="./index.php?theme=Gauges">Gauges</a>
+						<a class="dropdown-item" id="navthemen5" href="./index.php?theme=colors">Colors</a>
+						<a class="dropdown-item" id="navthemen6" href="./index.php?theme=colors-HH">Colors (HH)</a>
+					</div>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbardropSettings" data-toggle="dropdown">
+						Status
+					</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" id="navstatus1" href="status.php">Status</a>
+					</div>
+				</li>
+               	<li class="nav-item">
 					<a class="nav-link" href="logoff.php">Abmelden</a>
 				</li>
 

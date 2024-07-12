@@ -4,7 +4,15 @@ Stylesheet zum openWB Standard-Theme
 2019-2020 Michael Ortenstein
 */
 
-html {
+.btn-smx,
+.btn-group-smx > .btn {
+  padding: 0.0rem 0.5rem 0.0rem 0.5rem; 
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+html{
 	min-height: 100%;
 	min-width: 100%;
 }
@@ -129,6 +137,20 @@ body>.container-fluid {
 .cursor-pointer {
 	cursor: pointer;
 }
+
+
+
+.accordion .card-header:after {
+    font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+    content: "\f146";
+    float: right; 
+}
+.accordion .card-header.collapsed:after {
+    /* symbol for "collapsed" panels */
+	content: "\f0fe"; 
+}
+
 
 .vaRow {
 	/* vertical alignment of content in rows */

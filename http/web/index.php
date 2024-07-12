@@ -36,7 +36,7 @@ out('debug form site-conf:'.$debug);
 		$theme = $_COOKIE['openWBTheme'];
 		$_CURRENT_USER->thema = $theme;
 	}
-    $iscloud=true;
+    // $iscloud=true;
 	$file='themes/' . $theme;
 	if (file_exists(stream_resolve_include_path($file.'/theme.php') ) )
 		include($file.'/theme.php');

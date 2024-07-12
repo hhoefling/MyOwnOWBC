@@ -25,7 +25,8 @@ class PowerGraph {
 		this.height = 500;
 		this.margin = { top: 10, right: 20, bottom: 10, left: 25 };
 		this.liveGraphMinutes = 0;
-		this.lpIndexes = [4, 5, 6, 12, 13, 14, 15, 16];
+		this.lpIndexes8 = [4, 5, 6, 12, 13, 14, 15, 16];			// fuer lp1--lp8)
+		this.lpIndexes3 = [4, 5, 6];			// fuer lp1--lp3)
 
 		wbdata.usageStackOrder = 2;
 		
@@ -85,7 +86,7 @@ class PowerGraph {
 	activateLive() {
 		try {
 			this.resetLiveGraph();
-			subscribeMqttGraphSegments();
+			subscribeLiveGraphSegments();
 			subscribeGraphUpdates();
 		} catch (err) {
 			// on initial invocation this method is not existing
@@ -96,7 +97,7 @@ class PowerGraph {
 
 	deactivateLive() {
 		try {
-			unsubscribeMqttGraphSegments();
+			unsubscribeLiveGraphSegments();
 			unsubscribeGraphUpdates();
 		} catch (err) {
 			// on initial run this method is not existing
@@ -191,17 +192,19 @@ class PowerGraph {
 			// ignore error 
 		}
 	}
-	updateLive(topic, payload) {
+	updateLive(topic, payload, sindex ) {
+		console.log('graphMode:',wbdata.graphMode, ' sindex', sindex, ' payload ', payload.length);
 		if (wbdata.graphMode == 'live') { // only update if live graph is active
 			if (this.initialized) { // steady state
-				if (topic === "openWB/graph/lastlivevalues") {
+				// if (topic === "openWB/graph/lastlivevalues") {
+				if (sindex < 0) {
 					const values = this.extractLiveValues(payload.toString());
 					this.graphRefreshCounter++;
 					this.graphData.push(values);
 					this.updateGraph();
 					if (this.graphRefreshCounter > 60) {
 						this.resetLiveGraph();
-						subscribeMqttGraphSegments();
+						subscribeLiveGraphSegments();
 					}
 				}
 			} else { // init phase
@@ -232,7 +235,7 @@ class PowerGraph {
 						this.liveGraphMinutes = Math.round((endTime - startTime) / 60000);
 						this.updateHeading();
 						this.updateGraph();
-						unsubscribeMqttGraphSegments();
+						unsubscribeLiveGraphSegments();
 					}
 				}
 			}
@@ -387,11 +390,11 @@ class PowerGraph {
 			var cpEnergy = 0
 			for (i = 0; i < 3; i++) {
 				cpEnergy = (endValues[4 + i] - startValues[4 + i]) / 1000;
-				wbdata.historicSummary['lp' + i].energyToday = cpEnergy
+				wbdata.historicSummary['lp'+i].energyToday = cpEnergy
 			}
 			//for (i = 3; i < 8; i++) {
 			//	cpEnergy = (endValues[12 + i] - startValues[12 + i]) / 1000;
-			//	wbdata.historicSummary['lp' + i].energyToday = cpEnergy
+			//	wbdata.historicSummary['lp'+i].energyToday = cpEnergy
 			//}
 			wbdata.historicSummary.charging.energy = (endValues[7] - startValues[7]) / 1000;
 			var deviceEnergySum = 0;
@@ -436,11 +439,11 @@ class PowerGraph {
 			wbdata.historicSummary.evuIn.energy = +this.monthlyAmounts[1];
 			wbdata.historicSummary.batOut.energy = +this.monthlyAmounts[18];
 			wbdata.historicSummary.evuOut.energy = +this.monthlyAmounts[2];;
-			this.lpIndexes.map((record, i) => {
-				wbdata.historicSummary['lp' + i].energy = +this.monthlyAmounts[record]
-				wbdata.historicSummary['lp' + i].energyPv = 0
-				wbdata.historicSummary['lp' + i].energyBat = 0
-				wbdata.historicSummary['lp' + i].pvPercentage = 0
+			this.lpIndexes8.map((record, i) => {
+				wbdata.historicSummary['lp'+i].energy = +this.monthlyAmounts[record]
+				wbdata.historicSummary['lp'+i].energyPv = 0
+				wbdata.historicSummary['lp'+i].energyBat = 0
+				wbdata.historicSummary['lp'+i].pvPercentage = 0
 
 			})
 
@@ -489,11 +492,11 @@ class PowerGraph {
 			wbdata.historicSummary.evuIn.energy = +this.monthlyAmounts[1];
 			wbdata.historicSummary.batOut.energy = +this.monthlyAmounts[18];
 			wbdata.historicSummary.evuOut.energy = +this.monthlyAmounts[2];;
-			this.lpIndexes.map((record, i) => {
-				wbdata.historicSummary['lp' + i].energy = +this.monthlyAmounts[record]
-				wbdata.historicSummary['lp' + i].energyPv = 0
-				wbdata.historicSummary['lp' + i].energyBat = 0
-				wbdata.historicSummary['lp' + i].pvPercentage = 0
+			this.lpIndexes8.map((record, i) => {
+				wbdata.historicSummary['lp'+i].energy = +this.monthlyAmounts[record]
+				wbdata.historicSummary['lp'+i].energyPv = 0
+				wbdata.historicSummary['lp'+i].energyBat = 0
+				wbdata.historicSummary['lp'+i].pvPercentage = 0
 			})
 			wbdata.historicSummary.charging.energy = +this.monthlyAmounts[7];
 			var deviceEnergySum = 0;
@@ -919,17 +922,17 @@ class PowerGraph {
 			+ d.sh5 + d.sh6 + d.sh7 + d.sh8 + d.co0 + d.co1 + d.batIn + d.inverter)
 		);
 		yScale.domain([0, Math.ceil(extent[1] / 1000) * 1000]);
-		const keys = [["lp0", "lp1", "lp2", "lp3", "lp4",
-			"lp5", "lp6", "lp7",
-			"sh0", "sh1", "sh2", "sh3", "sh4",
-			"sh5", "sh6", "sh7", "sh8", "co0", "co1", "house", "batIn", "inverter"],
-		["house", "lp0", "lp1", "lp2", "lp3", "lp4",
-			"lp5", "lp6", "lp7",
-			"sh0", "sh1", "sh2", "sh3", "sh4",
-			"sh5", "sh6", "sh7", "sh8", "co0", "co1", "batIn", "inverter"],
-		["sh0", "sh1", "sh2", "sh3", "sh4",
-			"sh5", "sh6", "sh7", "sh8", "co0", "co1", "house", "lp0", "lp1", "lp2", "lp3", "lp4",
-			"lp5", "lp6", "lp7",
+		const keys = [
+		["lp0", "lp1", "lp2", "lp3", "lp4","lp5", "lp6", "lp7",
+			"sh0", "sh1", "sh2", "sh3", "sh4","sh5", "sh6", "sh7", "sh8", 
+			"co0", "co1", "house", "batIn", "inverter"],
+		["house", 
+		"lp0", "lp1", "lp2", "lp3", "lp4","lp5", "lp6", "lp7",
+			"sh0", "sh1", "sh2", "sh3", "sh4","sh5", "sh6", "sh7", "sh8", 
+			"co0", "co1", "batIn", "inverter"],
+		["sh0", "sh1", "sh2", "sh3", "sh4",	"sh5", "sh6", "sh7", "sh8", 
+			"co0", "co1", "house", 
+			"lp0", "lp1", "lp2", "lp3", "lp4","lp5", "lp6", "lp7",
 			"batIn", "inverter"]
 		];
 

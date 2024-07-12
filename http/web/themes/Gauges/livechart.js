@@ -458,8 +458,7 @@ function loadgraph(animationDuration = 1000)
 	function setGraphLineBorderWidth(theGraph, newWidth) {
 		// sets borderWidth attribute for all single lines without fill
 		for ( var index = 0; index < theGraph.config.data.datasets.length; index++) {
-			if ( !theGraph.config.data.datasets[index].fill ) 
-			{
+			if ( !theGraph.config.data.datasets[index].fill ) {
 				theGraph.config.data.datasets[index].borderWidth = newWidth;
 			}
 		}
@@ -607,7 +606,7 @@ function setvisibility(datarr,hidevar,hidevalue,booldisplay){
 	var arrayLength = datarr.length;
 	var vis=0
 	for (var i = 0; i < arrayLength; i++) {
-		if (( datarr[i] >= 0.010) || (datarr[i] <=- 0.010)) {
+		if (( datarr[i] >= 0.002) || (datarr[i] <=- 0.002)) {
 			vis=1
 		}
 	}
@@ -736,7 +735,6 @@ function updateGraph(dataset) {
 	for (var i = 0; i < lines.length; i++) 
 	{
 		var linessplit=lines[i].split(",");
-		console.log(updateGraph, linessplit);
 	
 		var ldate = linessplit[0];
 		var lbezug = linessplit[1];
@@ -855,7 +853,12 @@ function checkgraphload(){
 }
 
 $(document).ready(function(){
-	setTimeout(forcegraphload, 15000);
+	if( iscloud ) {
+		setTimeout(forcegraphload, 15000);
+		console.log('Timer 15000 startet')
+	} else {
+		console.log('no cloud, No Timer ,  ')
+	}
 });
 
 function forcegraphload() {
@@ -902,6 +905,33 @@ function forcegraphload() {
 		if ( !(typeof boolDisplayLpAll === "boolean") ) {
 			showhidedataset('boolDisplayLpAll');
 		}
+		if ( !(typeof boolDisplayShD1 === "boolean") ) {
+			showhidedataset('boolDisplayShD1');
+		}
+		if ( !(typeof boolDisplayShD1 === "boolean") ) {
+			showhidedataset('boolDisplayShD1');
+		}
+		if ( !(typeof boolDisplayShD2 === "boolean") ) {
+			showhidedataset('boolDisplayShD2');
+		}
+		if ( !(typeof boolDisplayShD3 === "boolean") ) {
+			showhidedataset('boolDisplayShD3');
+		}
+		if ( !(typeof boolDisplayShD4 === "boolean") ) {
+			showhidedataset('boolDisplayShD4');
+		}
+		if ( !(typeof boolDisplayShD5 === "boolean") ) {
+			showhidedataset('boolDisplayShD5');
+		}
+		if ( !(typeof boolDisplayShD6 === "boolean") ) {
+			showhidedataset('boolDisplayShD6');
+		}
+		if ( !(typeof boolDisplayShD7 === "boolean") ) {
+			showhidedataset('boolDisplayShD7');
+		}
+		if ( !(typeof boolDisplayShD8 === "boolean") ) {
+			showhidedataset('boolDisplayShD8');
+		}
 		if ( !(typeof boolDisplaySpeicherSoc === "boolean") ) {
 			showhidedataset('boolDisplaySpeicherSoc');
 		}
@@ -921,6 +951,7 @@ function forcegraphload() {
 	}
 }  // end forcegraphload
 
+// Nach timer 15000 
 function showhidedataset(thedataset) {
 	if ( window[thedataset] == true ) {
 		publish("1","openWB/graph/"+thedataset);
@@ -931,6 +962,7 @@ function showhidedataset(thedataset) {
 	}
 }
 
+// NC
 function showhidelegend(thedataset) {
 	if ( window[thedataset] == true ) {
 		publish("0","openWB/graph/"+thedataset);
@@ -941,6 +973,7 @@ function showhidelegend(thedataset) {
 	}
 }
 
+// NC
 function showhide(thedataset) {
 	if ( window[thedataset] == 0 ) {
 		publish("1","openWB/graph/"+thedataset);
@@ -951,20 +984,18 @@ function showhide(thedataset) {
 	}
 }
 
+// nur bei "local"
 function subscribeMqttGraphSegments() {
-	for (var segments = 1; segments < 17; segments++) 
-	{
+	for (var segments = 1; segments < 17; segments++) {
 		topic = "openWB/graph/" + segments + "alllivevalues";
-		console.log('Subscribe ',topic);
 		client.subscribe(topic, {qos: 0});
 	}
 }
 
+// nur bei "local"
 function unsubscribeMqttGraphSegments() {
-	for (var segments = 1; segments < 17; segments++) 
-	{
+	for (var segments = 1; segments < 17; segments++) {
 		topic = "openWB/graph/" + segments + "alllivevalues";
-		//console.log('UnSubscribe ',topic);
 		client.unsubscribe(topic);
 	}
 }

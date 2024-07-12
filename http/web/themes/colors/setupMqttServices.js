@@ -253,6 +253,12 @@ var topicsToSubscribe = [
 // holds number of topics flagged 1 initially
 var countTopicsNotForPreloader = topicsToSubscribe.filter(row => row[1] === 1).length;
 
+var lastlivesubcribted=false;
+var livesubcribted=false;
+var daysubcribted=false;
+var monthubcribted=false;
+
+
 
 var retries = 0;
 var topics = 0;
@@ -291,7 +297,7 @@ var options = {
 		if (wbdata.graphMode == 'day') {
 			subscribeDayGraph(new Date());
 		} else {
-			subscribeMqttGraphSegments();
+			subscribeLiveGraphSegments();
 			subscribeGraphUpdates();
 		}
 	},
@@ -329,19 +335,178 @@ client.onMessageArrived = function (message) {
 	if( typeof usern !== 'undefined' && usern>'' )
 	{
 		mqttmsg  = mqttmsg.replace(usern+'/'  , '');
-		console.log('topic now ', mqttmsg, message.payloadString);
+		console.log('topic now ', mqttmsg, message.payloadString.length);
 	}
 	handlevar(mqttmsg, message.payloadString);
 };
 
 
 
+function subscribeLiveGraphSegments() {
+	if(livesubcribted)
+	{
+		console.log('##### subscribeLiveGraphSegements, allredy done skip')
+	} else
+	{
+		console.log('SubScribeLiveGraphSegements');
+		for (var segments = 1; segments < 17; segments++) {
+			if(iscloud ) topic = "openWB/system/" + segments + "alllivevalues";
+ 				    else topic = "openWB/graph/" + segments + "alllivevalues";
+			
+			clientsubscribe(topic, { qos: 0 });
+		}
+		livesubcribted=true;
+	}
+	if( iscloud) {
+		console.log('send 1 to openWB/set/graph/RequestLLiveGraph');
+		publish("1",  "openWB/set/graph/RequestLLiveGraph");
+	}
+}
+
+function unsubscribeLiveGraphSegments() {
+	if(livesubcribted)
+	{
+		console.log('unSubScribeLiveGraphSegements');
+		for (var segments = 1; segments < 17; segments++) {
+			if(iscloud ) topic = "openWB/system/" + segments + "alllivevalues";
+ 				    else topic = "openWB/graph/" + segments + "alllivevalues";
+			clientunsubscribe(topic);
+		}
+		livesubcribted=false;
+	} else
+	 	console.log('##### unSubScribeLiveGraphSegments not subscribted, skip');
+}
+
+function subscribeGraphUpdates() {
+	if( lastlivesubcribted )
+	{
+		console.log('##### subscribeGraphUpdates, allredy done skip')
+	} else
+	{
+		console.log('SubScribeGraphUpdate');
+		if(iscloud ) topic = "openWB/system/lastlivevalues";
+ 			    else topic = "openWB/graph/lastlivevalues";
+		clientsubscribe(topic, { qos: 0 });
+		lastlivesubcribted=true;
+	}
+}
+
+function unsubscribeGraphUpdates() {
+	if( lastlivesubcribted )
+	 {
+	 	console.log('unSubScribeGraphUpdate');
+		if(iscloud ) topic = "openWB/system/lastlivevalues";
+			else 	 topic = "openWB/graph/lastlivevalues";
+ 	 	clientunsubscribe(topic);
+		lastlivesubcribted=false;
+	 } else
+	 	console.log('##### unSubScribeGraphUpdate not subscribted, skip');
+	 
+}
+
+function subscribeDayGraph(date) {
+	if( daysubcribted )
+	{
+		console.log('##### subscribeDayGraph, allredy done skip')
+	} else
+	{
+		console.log('SubScribeDayGraph');
+		// var today = new Date();
+		var dd = String(date.getDate()).padStart(2, '0');
+		var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+		var yyyy = date.getFullYear();
+		graphdate = yyyy + mm + dd;
+		for (var segment = 1; segment < 13; segment++) {
+			var topic = "openWB/system/DayGraphData" + segment;
+			clientsubscribe(topic, { qos: 0 });
+		}
+		daysubcribted=true;
+	}
+	publish(graphdate, "openWB/set/graph/RequestDayGraph");
+}
+
+function unsubscribeDayGraph() {
+	if( daysubcribted )
+	 {
+		console.log('unSubScribeDayGraph');
+		for (var segment = 1; segment < 13; segment++) {
+			var topic = "openWB/system/DayGraphData" + segment;
+			clientunsubscribe(topic);
+		}
+		daysubcribted=false;
+	} else 
+		console.log('##### unSubScribeDayGraph not subscribted, skip');
+	publish("0", "openWB/set/graph/RequestDayGraph");
+}
+
+function subscribeMonthGraph(date) {
+	if( monthubcribted )
+	{
+		console.log('##### subscribeMonthGraph, allredy done skip')
+	} else
+	{
+		console.log('SubScribeMonthGraphV1');
+		var mm = String(date.month + 1).padStart(2, '0'); //January is 0!
+		var yyyy = date.year;
+		graphdate = yyyy + mm;
+		for (var segment = 1; segment < 13; segment++) {
+			var topic = "openWB/system/MonthGraphDatan" + segment;
+			clientsubscribe(topic, { qos: 0 });
+		}
+		monthubcribted=true;
+	}
+	publish(graphdate, "openWB/set/graph/RequestMonthGraphv1");
+}
+
+function unsubscribeMonthGraph() {
+	if( monthubcribted )
+	 {
+		console.log('unSubScribeMonthGraphV1');
+		for (var segment = 1; segment < 13; segment++) {
+			var topic = "openWB/system/MonthGraphDatan" + segment;
+			clientunsubscribe(topic);
+		}
+		monthubcribted=false;
+	} else
+		console.log('##### unSubScribeMonthGraph not subscribted, skip');
+	publish("0", "openWB/set/graph/RequestMonthGraphv1");
+}
+
+
+
+function clientsubscribe(topic) 
+{
+	if( usern>'')
+		{ 
+				//console.log('Subscripe2 ', usern + '/' + topic)
+				client.subscribe( usern + '/' + topic, {qos: 0});
+		} else {
+				//console.log('Subscripe2 ', topic)
+				client.subscribe( topic, {qos: 0});
+		};  
+
+   topics++;
+   //console.log('topcis:',topics+ '  subscribe:'+ topic)
+}
+function clientunsubscribe(topic) {
+	if( iscloud && usern>'' )
+		topic = usern + '/' + topic;
+   client.unsubscribe(topic, { onFailure : function(x){ alert('Oh ha!');}  } );
+   topics--;
+   //console.log('topcis:',topics+'  unsubscribe '+topic)
+   if( topics < 0 )
+   {
+     console.log('!!!!!!!!!!! topcs < 0 !!!!!!!!!!');
+	 topics=0;
+   }
+}
+
 
 //Creates a new Messaging.Message Object and sends it
 function publish(payload, topic) {
 	if( iscloud && usern>'' )
 		topic = usern + '/' + topic;
-	console.log('MQTT publish('+topic+')='+ payload);
+	console.log('MQTT SEND ', topic, ' =  [', payload, ']');
 	var message = new Messaging.Message(payload);
 	message.destinationName = topic;
 	message.qos = 2;
@@ -353,40 +518,5 @@ function publish(payload, topic) {
 //	message.retained = true;
 //	client.send(message);
 }
-
-
-
-
-function subscribeDayGraph(date) {
-	// var today = new Date();
-	var dd = String(date.getDate()).padStart(2, '0');
-	var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-	var yyyy = date.getFullYear();
-	graphdate = yyyy + mm + dd;
-	for (var segment = 1; segment < 13; segment++) {
-		var topic = "openWB/system/DayGraphData" + segment;
-		clientsubscribe(topic, { qos: 0 });
-	}
-	publish(graphdate, "openWB/set/graph/RequestDayGraph");
-}
-
-
-
-
-function clientsubscribe(topic) 
-{
-	if( usern>'')
-		{ 
-				console.log('Subscripe2 ', usern + '/' + topic)
-				client.subscribe( usern + '/' + topic, {qos: 0});
-		} else {
-				console.log('Subscripe2 ', topic)
-				client.subscribe( topic, {qos: 0});
-		};  
-
-   topics++;
-   //console.log('topcis:',topics+ ' '+ topic)
-}
-
 
 

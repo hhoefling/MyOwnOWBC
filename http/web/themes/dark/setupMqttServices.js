@@ -74,11 +74,11 @@ var topicsToSubscribe = [
 	["openWB/hook/3/boolHookConfigured", 1],
 	// verbraucher Konfiguration
 	["openWB/Verbraucher/1/Configured", 0],
-	["openWB/Verbraucher/1/Name", 0],
+	["openWB/Verbraucher/1/Name", 1],
 	["openWB/Verbraucher/1/Watt", 1],
 	["openWB/Verbraucher/1/DailyYieldImportkWh", 1],
 	["openWB/Verbraucher/2/Configured", 0],
-	["openWB/Verbraucher/2/Name", 0],
+	["openWB/Verbraucher/2/Name", 1],
 	["openWB/Verbraucher/2/Watt", 1],
 	["openWB/Verbraucher/2/DailyYieldImportkWh", 1],
 	// housebattery Konfiguration
@@ -279,6 +279,7 @@ var topicsToSubscribe = [
 	["openWB/SmartHome/Devices/7/RelayStatus", 1],
 	["openWB/SmartHome/Devices/8/RelayStatus", 1],
 	["openWB/SmartHome/Devices/9/RelayStatus", 1],
+	
 	["openWB/config/get/SmartHome/Devices/1/mode", 1],
 	["openWB/config/get/SmartHome/Devices/2/mode", 1],
 	["openWB/config/get/SmartHome/Devices/3/mode", 1],
@@ -328,29 +329,92 @@ function subscribe1(topic)
 				client.subscribe( topic, {qos: 0});
 		};  
 }
-options.onSuccess = function () {
-	console.log("mqtt onSuccess...");
-	retries = 0;
-	console.log('onConnectSucess subscribe ' , topicsToSubscribe.length, ' values')
-	topicsToSubscribe.forEach((topic) => { 	subscribe1(topic[0]); });
+
+var retries = 0;
+var isSSL = location.protocol == 'https:'
+if(isSSL) port=MOSQPORTSSL;
+     else port=MOSQPORT ;
+
+
+//Connect Options
+if ( typeof MOSQSERVER === 'undefined' )
+{
+     MOSQSERVER =location.hostname;
+	 usern='';
+	 passwd='';
+	 iscloud=false;
+}	 
+console.log('MOSQSERVER', MOSQSERVER);
+console.log('usern:', usern);
+console.log('port:', port);
+console.log('iscloud',iscloud);
+
+var options = {
+ 	ports: [ port ],
+	hosts: [ MOSQSERVER ],
+	userName: usern,
+	password: passwd,
+	timeout: 5,
+	useSSL: isSSL,
+	//Gets Called if the connection has sucessfully been established
+	onSuccess: function () {
+		retries = 0;
+		topicsToSubscribe.forEach((topic) => { 	subscribe1(topic[0], {qos: 0}); });
 	if( iscloud )
 		{
 		  topicsToSubscribeCloud.forEach((topic) => { subscribe1(topic[0]); });
 		  publish("1",  "openWB/set/graph/RequestLLiveGraph");
-		}  		  
+		}
 	else 
+		{
 		  topicsToSubscribeLocal.forEach((topic) => { subscribe1(topic[0]); });
-	// bei cloud requestlivegraph();
-	timeOfLastMqttMessage = Date.now();	
+		}
+	timeOfLastMqttMessage = Date.now();			
+	},
+	//Gets Called if the connection could not be established
+	onFailure: function (message) {
+		setTimeout(function() { client.connect(options); }, 5000);
+	}
+};
 
-	};
-  
-// client.connect(options);
+var clientuid = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
+console.log('mqtt client ' , MOSQSERVER, port, clientuid); 
+var client = new Messaging.Client(MOSQSERVER, port, clientuid);
+
 $(document).ready(function(){
-    validate();
-	console.log('usern:', usern, passwd);
-	console.log('now connect', options)
-	doconnect();
+	console.log('document read connect now');
+	client.connect(options);
 });
 
+//Gets  called if the websocket/mqtt connection gets disconnected for any reason
+client.onConnectionLost = function (responseObject) {
+	client.connect(options);
+};
+//Gets called whenever you receive a message
+client.onMessageArrived = function (message) {
+	mqttmsg = message.destinationName;
+	console.log('topic ', mqttmsg, message.payloadString);
+	if( typeof usern !== 'undefined' && usern>'' )
+	{
+		mqttmsg  = mqttmsg.replace(usern+'/'  , '');
+		console.log('topic now ', mqttmsg, message.payloadString);
+	}
+	handlevar(mqttmsg, message.payloadString);
+};
 
+//Creates a new Messaging.Message Object and sends it
+function publish(payload, topic) {
+	if( iscloud && usern>'' )
+		topic = usern + '/' + topic;
+	console.log('MQTT publish('+topic+')='+ payload);
+	var message = new Messaging.Message(payload);
+	message.destinationName = topic;
+	message.qos = 2;
+	message.retained = true;
+	client.send(message);
+//	var message = new Messaging.Message("local client uid: " + clientuid + " sent: " + topic);
+//	message.destinationName = "openWB/set/system/topicSender";
+//	message.qos = 2;
+//	message.retained = true;
+//	client.send(message);
+}

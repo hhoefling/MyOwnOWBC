@@ -326,7 +326,7 @@ END;
 	<div id="altclicker" class="container-fluid">
 		<!-- Kopfzeile -->
 		<div class="row py-1 verySmallTextSize" style="color: var(--color-fg)">
-			<div id="date" class="col-2 text-left" style="padding-right: 5px; padding-left: 5px;" >
+			<div id="date" class="col-2 text-left" style="padding-right: 5px; padding-left: 15px;" >
 				&nbsp;
 			</div>
 			<div class="col-2 text-left" >
@@ -346,7 +346,7 @@ END;
              <meter id="need" min="0" xlow="5" high="8" max="12" value="0" style="width:80%" ></meter>
 			 <span id="needs">	&nbsp; </span>
 			</div>
-			<div id="time" class="col-2 text-right" style="padding-right: 5px; padding-left: 5px;" >
+			<div id="time" class="col-2 text-right" style="padding-right: 15px; padding-left: 5px;" >
 				&nbsp;needs
 			</div>
 		</div>

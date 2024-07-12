@@ -799,12 +799,12 @@ class PowerGraph {
   drawUsageGraph(svg, width, height) {
     const yScale = d3.scaleLinear().range([height + 10, 2 * height]);
 
-    const extent = d3.extent(this.graphData, (d) =>
+	const extent = d3.extent(this.graphData, (d) =>
 		(d.housePower + d.lp0 + d.lp1 + d.lp2 + d.lp3 + d.lp4
 			+ d.lp5 + d.lp6 + d.lp7 + d.sh0 + d.sh1 + d.sh2 + d.sh3 + d.sh4
 			+ d.sh5 + d.sh6 + d.sh7 + d.sh8 + d.co0 + d.co1 + d.batIn + d.inverter)
-    );
-    yScale.domain([0, Math.ceil(extent[1] / 1000) * 1000]);
+	);
+	yScale.domain([0, Math.ceil(extent[1] / 1000) * 1000]);
 		const keys = [["lp0", "lp1", "lp2", "lp3", "lp4",
 			"lp5", "lp6", "lp7",
 			"sh0", "sh1", "sh2", "sh3", "sh4",
@@ -816,8 +816,8 @@ class PowerGraph {
 		["sh0", "sh1", "sh2", "sh3", "sh4",
 			"sh5", "sh6", "sh7", "sh8", "co0", "co1", "housePower", "lp0", "lp1", "lp2", "lp3", "lp4",
 			"lp5", "lp6", "lp7",
-        "batIn", "inverter"]
-    ];
+			"batIn", "inverter"]
+		];
 
     const stackGen = d3.stack().keys(keys[wbdata.usageStackOrder]);
     const stackedSeries = stackGen(this.graphData);

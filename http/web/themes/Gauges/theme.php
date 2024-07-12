@@ -8,7 +8,44 @@ function  xgeturl($file)
  $fn=sprintf('themes/%s/%s', $theme,$file);
  $ftime=filemtime($fn);
  return sprintf('%s?v=%d' , $fn,$ftime);
+}
 
+
+function makedebugreihe()
+{
+ global $dbdebs,$dbdeb,$debug;
+ 
+ echo <<<END
+	<!-- debug reihe  -->
+	<div id="altclicker" class="container-fluid py-0 pb-2">
+	  <div class="row py-0 px-0">
+		<div class="rounded shadow wb-widget col-md p-2 m-1 ">
+			<div id="accordion" class="accordion">
+				<div class="card mb-0">
+					<div class="card-header bg-secondary collapsed" data-toggle="collapse" data-target="#debugOne">
+						<a class="card-title">Debug </a>
+					</div>
+					<div id="debugOne" class="card-body collapse" data-parent="#accordion">
+						<pre id="debugdiv" style="font-size:0.7rem;">
+
+END;
+					foreach( $dbdebs as $s)
+						echo "DEB:$s\n";
+					if( $debug > 3) { 
+						echo "---- Globals---\n";
+						$dbdebs="striped";	
+				 		print_r($GLOBALS);
+					}
+echo <<<END
+						</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+  	  </div>
+	</div>
+	<!-- debug reihe  -->
+END;
 }
 ?>
 <!DOCTYPE html>
@@ -114,6 +151,7 @@ echo <<<END
 		MOSQPORTSSL=$MOSQPORTSSL;
 		PROJECT='$PROJECT';
         theme='$theme';
+        debug='$debug';
     }
     validate();
     </script>
@@ -148,8 +186,8 @@ END;
 			}
 			return '';
 		}
-        console.log('theme ' ,  theme)
-		$('head').append('<link rel="stylesheet" href="themes/' + theme + '/style.css?v=20221127">');
+	 	$('head').append('<link rel="stylesheet" href="<?php echo xgeturl('style.css');?>">');	var debugmode=<?php echo $debug;?>;
+
 	</script>
 </head>
 
@@ -934,13 +972,8 @@ END;
 				</div>
 			</div>
 		</div>
-<br>
-	</div>  <!-- container -->
-    	<footer class="bg-dark fixed-bottom small text-light">
-		<div class="container text-center">
-			openWB_lite <span id='spanversion' class='spanversion'></span>, die modulare Wallbox
-		</div>
-	</footer>
+	</div>
+
 
 	<script>
 		var defaultScaleCounter = 8640;  // ca. 12 Stunden Gauge Auto-Rescale
@@ -1636,6 +1669,26 @@ END;
 
 		});  // end document ready
 	</script>
+
+
+<?php
+	 if($debug>0)
+	 {
+		$lines="striped";
+		$owbconf="striped";
+   		makedebugreihe();
+	 }
+?>
+
+	<div id="footer">
+		<footer class="bg-dark fixed-bottom small text-light">
+			<div class="container text-center">
+				openWB_lite <span id='spanversion' class='spanversion'></span>, die modulare Wallbox
+			</div>
+		</footer>
+	</div>
+
+
 
 </body>
 

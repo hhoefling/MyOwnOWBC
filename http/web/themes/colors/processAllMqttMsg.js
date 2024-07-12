@@ -274,10 +274,11 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 		//checkgraphload();
 	}
 	else if (mqttmsg.match(/^openwb\/graph\/[1-9][0-9]*alllivevalues$/i)) {
-		powerGraph.updateLive(mqttmsg, mqttpayload);
-		
 		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];
-		console.log('alllivevalues['+index+ '] :' +  mqttpayload.length );
+		if( mqttpayload != 'empty' )
+			powerGraph.updateLive(mqttmsg, mqttpayload, index);
+		
+		//console.log('alllivevalues['+index+ '] :' +  mqttpayload.length );
 		
 		
 		/* var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
@@ -289,7 +290,7 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 		}*/
 	}
 	else if (mqttmsg == 'openWB/graph/lastlivevalues') {
-		powerGraph.updateLive(mqttmsg, mqttpayload);
+		powerGraph.updateLive(mqttmsg, mqttpayload, -1);
 		/* 	if ( initialread > 0) {
 				//updateGraph(mqttpayload);
 			}
@@ -313,7 +314,7 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 				all15 = 0;
 				all16 = 0;
 				graphrefreshcounter = 0;
-				subscribeMqttGraphSegments();
+				subscribeLiveGraphSegments();
 			} */
 		// graphrefreshcounter += 1;
 	}
@@ -663,7 +664,11 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 	// processes mqttmsg for topic openWB/system
 	// called by handlevar
 	processPreloader(mqttmsg);
-    //console.log(mqttmsg, ' ', mqttpayload);
+
+	if( mqttpayload.length < 128)
+	     console.log('processSystemMessages', mqttmsg,  mqttpayload )
+	else console.log('processSystemMessages', mqttmsg,  ' Bytes:' , mqttpayload.length )
+	
 	if (mqttmsg == 'openWB/system/debug') {
 		var i = parseInt(mqttpayload, 10);
 		if (isNaN(i) || i < 0 || i > 9) { i = 0; }
@@ -683,7 +688,8 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 			// timestamp is valid date so process
 			var HH = String(dateObject.getHours()).padStart(2, '0');
 			var MM = String(dateObject.getMinutes()).padStart(2, '0');
-			time = HH + ':' + MM;
+			var SS = String(dateObject.getSeconds()).padStart(2, '0');
+			time = HH + ':' + MM + ':' + SS;
 			var dd = String(dateObject.getDate()).padStart(2, '0');  // format with leading zeros
 			var mm = String(dateObject.getMonth() + 1).padStart(2, '0'); //January is 0 so add +1!
 			var dayOfWeek = dateObject.toLocaleDateString('de-DE', { weekday: 'short' });
@@ -707,14 +713,27 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 	     $('.devicename').addClass('fa fa-cloud');
       window.document.title='oWB ' + mqttpayload; 
     } 
+	else if (m = mqttmsg.match(/^openwb\/system\/([1-9][0-9]*)alllivevalues$/i)) {
+		var index = m[1];
+		console.log(mqttmsg, ' ', mqttpayload.length );
+		if( mqttpayload != 'empty' )
+			powerGraph.updateLive(mqttmsg, mqttpayload , index );
+	}
+	else if (mqttmsg == 'openWB/system/lastlivevalues') {
+		if( mqttpayload != 'empty' )
+			powerGraph.updateLive(mqttmsg, mqttpayload, -1 );
+	}
 	else if (mqttmsg.match(/^openwb\/system\/daygraphdata[1-9][0-9]*$/i)) {
-		powerGraph.updateDay(mqttmsg, mqttpayload);
+		if( mqttpayload != 'empty' )
+			powerGraph.updateDay(mqttmsg, mqttpayload);
 	}
 	else if (mqttmsg.match(/^openwb\/system\/monthgraphdatan[1-9][0-9]*$/i)) {
-		powerGraph.updateMonth(mqttmsg, mqttpayload);
+		if( mqttpayload != 'empty' )
+			powerGraph.updateMonth(mqttmsg, mqttpayload);
 	}
 	else if (mqttmsg.match(/^openwb\/system\/yeargraphdatan[1-9][0-9]*$/i)) {
-		powerGraph.updateYear(mqttmsg, mqttpayload);
+		if( mqttpayload != 'empty' )
+			powerGraph.updateYear(mqttmsg, mqttpayload);
 	}
 	
 }
@@ -1339,80 +1358,7 @@ function processSmartHomeDevicesStatusMessages(mqttmsg, mqttpayload) {
 		wbdata.updateGlobal("smarthomePower", SHPower);
 	}
 }
-function subscribeMqttGraphSegments() {
-	for (var segments = 1; segments < 17; segments++) {
-		topic = "openWB/graph/" + segments + "alllivevalues";
-		client.subscribe(topic, { qos: 0 });
-	}
-}
 
-function unsubscribeMqttGraphSegments() {
-	for (var segments = 1; segments < 17; segments++) {
-		topic = "openWB/graph/" + segments + "alllivevalues";
-		client.unsubscribe(topic);
-	}
-}
-
-function subscribeGraphUpdates() {
-	topic = "openWB/graph/lastlivevalues";
-	client.subscribe(topic, { qos: 0 });
-}
-
-function unsubscribeGraphUpdates() {
-	topic = "openWB/graph/lastlivevalues";
-	client.unsubscribe(topic);
-}
-
-function subscribeDayGraph(date) {
-	// var today = new Date();
-	var dd = String(date.getDate()).padStart(2, '0');
-	var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-	var yyyy = date.getFullYear();
-	graphdate = yyyy + mm + dd;
-	for (var segment = 1; segment < 13; segment++) {
-		var topic = "openWB/system/DayGraphData" + segment;
-		client.subscribe(topic, { qos: 0 });
-	}
-	publish(graphdate, "openWB/set/graph/RequestDayGraph");
-}
-
-function unsubscribeDayGraph() {
-	publish("0", "openWB/set/graph/RequestDayGraph");
-}
-
-function subscribeMonthGraph(date) {
-	var mm = String(date.month + 1).padStart(2, '0'); //January is 0!
-	var yyyy = date.year;
-	graphdate = yyyy + mm;
-	for (var segment = 1; segment < 13; segment++) {
-		var topic = "openWB/system/MonthGraphDatan" + segment;
-		client.subscribe(topic, { qos: 0 });
-	}
-	publish(graphdate, "openWB/set/graph/RequestMonthGraphv1");
-}
-
-function unsubscribeMonthGraph() {
-	for (var segment = 1; segment < 13; segment++) {
-		var topic = "openWB/system/MonthGraphDatan" + segment;
-		client.unsubscribe(topic);
-	}
-	publish("0", "openWB/set/graph/RequestMonthGraphv1");
-}
-function subscribeYearGraph(year) {
-	for (var segment = 1; segment < 13; segment++) {
-		var topic = "openWB/system/YearGraphDatan" + segment;
-		client.subscribe(topic, { qos: 0 });
-	}
-	publish(String(year), "openWB/set/graph/RequestYearGraphv1");
-}
-
-function unsubscribeYearGraph() {
-	for (var segment = 1; segment < 13; segment++) {
-		var topic = "openWB/system/YearGraphDatan" + segment;
-		client.unsubscribe(topic);
-	}
-	publish("0", "openWB/set/graph/RequestYearGraphv1");
-}
 function makeInt(message) {
 	var number = parseInt(message, 10);
 	if (isNaN(number)) {

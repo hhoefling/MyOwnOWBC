@@ -4,7 +4,7 @@
  * @author Kevin Wieland
  * @author Michael Ortenstein
  */
-var graphrefreshcounter = 0;
+var graphrefreshcounter = 0;		// nur bei "local" nicht bei "cloud"
 function getCol(matrix, col){
 	var column = [];
 	for(var i=0; i<matrix.length; i++){
@@ -155,7 +155,7 @@ function processSofortConfigMessages(mqttmsg, mqttpayload) {
 function processGraphMessages(mqttmsg, mqttpayload) {
 	// processes mqttmsg for topic openWB/graph
 	// called by handlevar
-	// console.log("received graph msg: " + mqttmsg + ": " + mqttpayload);
+	// console.log("received graph msg: " + mqttmsg + ": " + mqttpayload.length);
 	processPreloader(mqttmsg);
 	if ( mqttmsg == 'openWB/graph/boolDisplayHouseConsumption' ) {
 		if ( mqttpayload == 1) {
@@ -204,6 +204,17 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 		}
 		checkgraphload();
 	}
+	else if ( mqttmsg.match( /^openwb\/graph\/booldisplaylp[1-9][0-9]*soc$/i ) ) {
+		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
+		if ( mqttpayload == 1) {
+			window['boolDisplayLp' + index + 'Soc'] = false;
+			window['hidelp' + index + 'soc'] = 'foo';
+		} else {
+			window['boolDisplayLp' + index + 'Soc'] = true;
+			window['hidelp' + index + 'soc'] = 'LP' + index + ' SoC';
+		}
+		checkgraphload();
+	}
 	else if ( mqttmsg.match( /^openwb\/graph\/booldisplaylp[1-9][0-9]*$/i ) ) {
 		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
 		// now call functions or set variables corresponding to the index
@@ -246,23 +257,12 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 		}
 		checkgraphload();
 	}
-	else if ( mqttmsg.match( /^openwb\/graph\/booldisplaylp[1-9][0-9]*soc$/i ) ) {
-		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
-		if ( mqttpayload == 1) {
-			window['boolDisplayLp' + index + 'Soc'] = false;
-			window['hidelp' + index + 'soc'] = 'foo';
-		} else {
-			window['boolDisplayLp' + index + 'Soc'] = true;
-			window['hidelp' + index + 'soc'] = 'LP' + index + ' SoC';
-		}
-		checkgraphload();
-	}
 	else if ( mqttmsg.match( /^openwb\/graph\/booldisplayload[1-9][0-9]*$/i ) ) {
 		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
 		// now call functions or set variables corresponding to the index
 		if ( mqttpayload == 1) {
-			window['hideload'+index] = 'foo';
-			window['boolDisplayLoad'+index] = false;
+			window['hideload' + index] = 'foo';
+			window['boolDisplayLoad' + index] = false;
 		} else {
 			window['hideload'+index] = 'Verbraucher ' + index;
 			window['boolDisplayLoad'+index] = true;
@@ -272,6 +272,7 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 	else if ( mqttmsg.match( /^openwb\/graph\/booldisplayshd[1-9][0-9]*$/i ) ) {
 		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
 		// now call functions or set variables corresponding to the index
+		console.log('booldisplayshd', index, mqttpayload)
 		if ( mqttpayload == 1) {
 			window['hideshd'+index] = 'foo';
 			window['boolDisplayShD'+index] = false;
@@ -281,6 +282,7 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 		}
 		checkgraphload();
 	}
+	// bei localem mode daten aus dem Graph Zweig
 	else if ( mqttmsg.match( /^openwb\/graph\/[1-9][0-9]*alllivevalues$/i ) ) {
 		// graph messages if local connection
 		var index = mqttmsg.match(/(\d+)(?!.*\d)/g)[0];  // extract last match = number from mqttmsg
@@ -299,7 +301,7 @@ function processGraphMessages(mqttmsg, mqttpayload) {
 		if (graphrefreshcounter > 60) {
 			// reload graph completely
 			initialread = 0;
-			all1 = 0;		// bis z u 16 Zeilen
+			all1 = 0;
 			all2 = 0;
 			all3 = 0;
 			all4 = 0;
@@ -523,7 +525,8 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 			// timestamp is valid date so process
 			var HH = String(dateObject.getHours()).padStart(2, '0');
 			var MM = String(dateObject.getMinutes()).padStart(2, '0');
-			time = HH + ':'  + MM;
+			var SS = String(dateObject.getSeconds()).padStart(2, '0');
+			time = HH + ':'  + MM + ':' + SS;
 			var dd = String(dateObject.getDate()).padStart(2, '0');  // format with leading zeros
 			var mm = String(dateObject.getMonth() + 1).padStart(2, '0'); //January is 0 so add +1!
 			var dayOfWeek = dateObject.toLocaleDateString('de-DE', { weekday: 'short'});

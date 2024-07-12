@@ -181,7 +181,8 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 			// timestamp is valid date so process
 			var HH = String(dateObject.getHours()).padStart(2, '0');
 			var MM = String(dateObject.getMinutes()).padStart(2, '0');
-			time = HH + ':' + MM;
+			var SS = String(dateObject.getSeconds()).padStart(2, '0');
+			time = HH + ':' + MM + ':' + SS;
 			var dd = String(dateObject.getDate()).padStart(2, '0');  // format with leading zeros
 			var mm = String(dateObject.getMonth() + 1).padStart(2, '0'); //January is 0 so add +1!
 			var dayOfWeek = dateObject.toLocaleDateString('de-DE', { weekday: 'short' });
